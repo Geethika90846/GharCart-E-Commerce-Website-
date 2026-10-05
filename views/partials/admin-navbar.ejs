@@ -1,0 +1,93 @@
+<header class="sticky top-0 z-40 bg-slate-900 text-white border-b border-slate-800 shadow-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 gap-4">
+      
+      <!-- Brand & Admin Badge -->
+      <div class="flex items-center gap-6">
+        <a href="/admin/dashboard" class="flex items-center gap-2.5 group">
+          <div class="w-9 h-9 rounded-xl bg-indigo-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/30">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-lg font-bold tracking-tight text-white flex items-center gap-1.5">
+              GharCart
+              <span class="text-[10px] bg-indigo-500/30 text-indigo-300 font-semibold px-2 py-0.5 rounded-full border border-indigo-400/30">Admin</span>
+            </span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden md:flex items-center gap-1">
+          <a
+            href="/admin/dashboard"
+            class="px-3 py-1.5 rounded-xl text-sm font-medium transition-colors <%= currentPath === '/admin/dashboard' ? 'bg-slate-800 text-white' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' %>"
+          >
+            Dashboard
+          </a>
+          <a
+            href="/admin/add-product"
+            class="px-3 py-1.5 rounded-xl text-sm font-medium transition-colors <%= currentPath === '/admin/add-product' ? 'bg-slate-800 text-white' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' %>"
+          >
+            Add Product
+          </a>
+          <a
+            href="/admin/orders"
+            class="px-3 py-1.5 rounded-xl text-sm font-medium transition-colors <%= currentPath.startsWith('/admin/orders') ? 'bg-slate-800 text-white' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' %>"
+          >
+            Orders
+          </a>
+          <a
+            href="/admin/customers"
+            class="px-3 py-1.5 rounded-xl text-sm font-medium transition-colors <%= currentPath === '/admin/customers' ? 'bg-slate-800 text-white' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' %>"
+          >
+            Customers
+          </a>
+          <a
+            href="/dashboard"
+            class="px-3 py-1.5 rounded-xl text-sm font-medium text-indigo-400 hover:text-indigo-300 hover:bg-slate-800/60 transition-colors flex items-center gap-1"
+          >
+            <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+            <span>Customer Store</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Right Admin Controls -->
+      <div class="flex items-center gap-3">
+        <!-- Dark Mode Toggle -->
+        <button
+          type="button"
+          onclick="toggleTheme()"
+          aria-label="Toggle Dark Mode"
+          class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+        >
+          <i data-lucide="moon" class="w-4 h-4 hidden dark:block"></i>
+          <i data-lucide="sun" class="w-4 h-4 block dark:hidden"></i>
+        </button>
+
+        <!-- Admin Profile & Logout -->
+        <div class="flex items-center gap-2 pl-2 border-l border-slate-800">
+          <span class="text-xs font-semibold text-slate-300 hidden sm:inline"><%= currentUser.name %></span>
+          <a
+            href="/admin/logout"
+            title="Sign Out"
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 transition-all"
+          >
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Mobile Subnav -->
+    <div class="flex md:hidden items-center justify-around py-2 border-t border-slate-800 text-xs">
+      <a href="/admin/dashboard" class="px-2 py-1 rounded <%= currentPath === '/admin/dashboard' ? 'text-indigo-400 font-bold' : 'text-slate-400' %>">Dashboard</a>
+      <a href="/admin/add-product" class="px-2 py-1 rounded <%= currentPath === '/admin/add-product' ? 'text-indigo-400 font-bold' : 'text-slate-400' %>">+ Product</a>
+      <a href="/admin/orders" class="px-2 py-1 rounded <%= currentPath.startsWith('/admin/orders') ? 'text-indigo-400 font-bold' : 'text-slate-400' %>">Orders</a>
+      <a href="/admin/customers" class="px-2 py-1 rounded <%= currentPath === '/admin/customers' ? 'text-indigo-400 font-bold' : 'text-slate-400' %>">Customers</a>
+    </div>
+
+  </div>
+</header>

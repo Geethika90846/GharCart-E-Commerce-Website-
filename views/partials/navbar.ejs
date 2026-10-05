@@ -1,0 +1,191 @@
+<header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 transition-colors">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 gap-4">
+      
+      <!-- Brand Logo -->
+      <a href="/dashboard" class="flex items-center gap-2.5 flex-shrink-0 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+          <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">GharCart</span>
+          <span class="text-[10px] font-medium text-slate-400 -mt-1 tracking-wider uppercase">Cash on Delivery</span>
+        </div>
+      </a>
+
+      <!-- Search Bar (User dashboard & browsing) -->
+      <% if (currentUser && currentUser.role === 'user') { %>
+        <div class="flex-1 max-w-lg hidden md:block">
+          <form action="/dashboard" method="GET" class="relative">
+            <input
+              type="text"
+              name="search"
+              placeholder="Search smartphones, clothes, shoes, home decor..."
+              value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+              class="w-full pl-10 pr-10 py-2 text-sm bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 rounded-full border border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none transition-all"
+            />
+            <button type="submit" class="absolute left-3.5 top-2.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400">
+              <i data-lucide="search" class="w-4 h-4"></i>
+            </button>
+            <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+              <a href="/dashboard" class="absolute right-3.5 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </a>
+            <% } %>
+          </form>
+        </div>
+      <% } %>
+
+      <!-- Right Navigation Actions -->
+      <div class="flex items-center gap-2 sm:gap-3">
+
+        <!-- Dark Mode Toggle -->
+        <button
+          type="button"
+          onclick="toggleTheme()"
+          aria-label="Toggle Dark Mode"
+          class="p-2 rounded-xl text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+        >
+          <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+          <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+        </button>
+
+        <% if (currentUser && currentUser.role === 'user') { %>
+          <!-- Notification Bell -->
+          <div class="relative" id="notif-container">
+            <button
+              type="button"
+              id="notif-button"
+              onclick="toggleNotifications()"
+              aria-label="Notifications"
+              class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <i data-lucide="bell" class="w-5 h-5"></i>
+              <span
+                id="notif-badge"
+                class="<%= unreadNotifications > 0 ? '' : 'hidden' %> absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white dark:ring-slate-900"
+              ></span>
+            </button>
+
+            <!-- Notifications Dropdown -->
+            <div
+              id="notif-dropdown"
+              class="hidden absolute right-0 mt-2 w-80 sm:w-88 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden z-50 transition-all"
+            >
+              <div class="p-3.5 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">Notifications</span>
+                <span class="text-[11px] text-indigo-600 dark:text-indigo-400 font-medium">Order Updates</span>
+              </div>
+              <div id="notif-list" class="max-h-72 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
+                <div class="p-4 text-center text-xs text-slate-400">Loading notifications...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- My Orders Link -->
+          <a
+            href="/orders"
+            class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <i data-lucide="package" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
+            <span>My Orders</span>
+          </a>
+
+          <!-- Cart Icon with Instant Badge -->
+          <a
+            href="/cart"
+            class="relative flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 transition-colors"
+          >
+            <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+            <span class="hidden sm:inline text-sm font-semibold">Cart</span>
+            <span
+              id="nav-cart-badge"
+              class="<%= cartCount > 0 ? '' : 'hidden' %> bg-indigo-600 text-white text-[11px] font-bold px-1.5 py-0.5 rounded-full min-w-5 text-center"
+            >
+              <%= cartCount %>
+            </span>
+          </a>
+
+          <!-- User Menu Dropdown -->
+          <div class="relative group">
+            <button class="flex items-center gap-2 pl-2 pr-1 py-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+              <div class="w-8 h-8 rounded-full bg-indigo-600/10 text-indigo-600 dark:bg-indigo-400/20 dark:text-indigo-300 font-bold text-xs flex items-center justify-center">
+                <%= currentUser.name.charAt(0).toUpperCase() %>
+              </div>
+              <span class="text-xs font-medium text-slate-700 dark:text-slate-200 hidden md:block max-w-[100px] truncate"><%= currentUser.name %></span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+            </button>
+            <div class="absolute right-0 mt-1 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 py-1.5 hidden group-hover:block transition-all">
+              <div class="px-3 py-2 border-b border-slate-100 dark:border-slate-800">
+                <p class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate"><%= currentUser.name %></p>
+                <p class="text-[11px] text-slate-400 truncate"><%= currentUser.email %></p>
+              </div>
+              <a href="/orders" class="flex sm:hidden items-center gap-2 px-3 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800">
+                <i data-lucide="package" class="w-4 h-4"></i> My Orders
+              </a>
+              <a href="/admin/login" class="flex items-center gap-2 px-3 py-2 text-xs text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40">
+                <i data-lucide="shield" class="w-4 h-4"></i> Admin Portal
+              </a>
+              <a href="/logout" class="flex items-center gap-2 px-3 py-2 text-xs text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40">
+                <i data-lucide="log-out" class="w-4 h-4"></i> Log Out
+              </a>
+            </div>
+          </div>
+
+          <!-- Quick link to Admin Portal for logged-in user -->
+          <a
+            href="/admin/dashboard"
+            title="Switch to Admin Management Portal"
+            class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-indigo-200 dark:border-indigo-800/80 bg-indigo-50/50 dark:bg-indigo-950/40 text-xs font-semibold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 transition-colors"
+          >
+            <i data-lucide="shield" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"></i>
+            <span>Admin</span>
+          </a>
+
+        <% } else { %>
+          <!-- Not Logged In -->
+          <a
+            href="/login"
+            class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 px-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            Log in
+          </a>
+          <a
+            href="/register"
+            class="text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-1.5 rounded-xl shadow-sm shadow-indigo-500/20 transition-all hover:scale-105"
+          >
+            Register
+          </a>
+          <a
+            href="/admin/login"
+            title="Admin Login"
+            class="text-xs text-indigo-700 hover:text-indigo-900 dark:text-indigo-300 dark:hover:text-white px-2.5 py-1.5 border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/40 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900 transition-colors inline-flex items-center gap-1.5 font-semibold"
+          >
+            <i data-lucide="shield" class="w-3.5 h-3.5 text-indigo-600"></i>
+            <span>Admin</span>
+          </a>
+        <% } %>
+
+      </div>
+    </div>
+
+    <!-- Mobile Search bar for User Dashboard -->
+    <% if (currentUser && currentUser.role === 'user') { %>
+      <div class="block md:hidden pb-3">
+        <form action="/dashboard" method="GET" class="relative">
+          <input
+            type="text"
+            name="search"
+            placeholder="Search products..."
+            value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+            class="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-lg border border-transparent focus:outline-none"
+          />
+          <button type="submit" class="absolute left-2.5 top-2 text-slate-400">
+            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+          </button>
+        </form>
+      </div>
+    <% } %>
+
+  </div>
+</header>

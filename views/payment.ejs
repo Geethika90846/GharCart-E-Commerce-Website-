@@ -1,0 +1,176 @@
+<%- include('partials/header') %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+  <!-- Step Indicator -->
+  <div class="flex items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm font-semibold text-slate-500">
+    <div class="flex items-center gap-2 text-slate-400">
+      <span class="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 flex items-center justify-center text-xs">✓</span>
+      <span>Delivery Details</span>
+    </div>
+    <div class="w-8 sm:w-16 h-0.5 bg-indigo-600"></div>
+    <div class="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+      <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs">2</span>
+      <span>COD Confirmation</span>
+    </div>
+    <div class="w-8 sm:w-16 h-0.5 bg-slate-200 dark:bg-slate-700"></div>
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 flex items-center justify-center text-xs">3</span>
+      <span>Placed</span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Left: Payment Method & Address Verification -->
+    <div class="lg:col-span-2 space-y-6">
+      
+      <!-- Payment Option Selection Card -->
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900 dark:text-white">Choose Payment Method</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">GharCart operates exclusively with 100% Cash-on-Delivery for maximum customer convenience.</p>
+        </div>
+
+        <!-- Cash on Delivery Selected Card -->
+        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border-2 border-indigo-600 dark:border-indigo-500 flex items-start gap-4">
+          <div class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5">
+            <i data-lucide="check" class="w-4 h-4"></i>
+          </div>
+          <div class="flex-1 space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">Cash on Delivery (COD)</span>
+              <span class="text-[11px] font-semibold uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">
+                Zero Advance Fee
+              </span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              Pay ₹<%= Number(total).toLocaleString('en-IN') %> directly to our delivery executive when your package arrives at your doorstep. Cash and instant UPI QR payments are both accepted.
+            </p>
+          </div>
+        </div>
+
+        <!-- Disabled other options to show realistic checkout experience -->
+        <div class="space-y-2 opacity-50 cursor-not-allowed">
+          <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+            <span class="flex items-center gap-2">
+              <i data-lucide="credit-card" class="w-4 h-4"></i>
+              <span>Credit / Debit Card (Temporarily Disabled - Enjoy COD)</span>
+            </span>
+            <span class="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">Not required</span>
+          </div>
+          <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+            <span class="flex items-center gap-2">
+              <i data-lucide="landmark" class="w-4 h-4"></i>
+              <span>Net Banking (Temporarily Disabled - Enjoy COD)</span>
+            </span>
+            <span class="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">Not required</span>
+          </div>
+        </div>
+
+        <!-- Delivery Address Confirmation Tile -->
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-indigo-600"></i>
+              Delivering to
+            </span>
+            <a href="/checkout" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">Change</a>
+          </div>
+          <p class="text-sm font-semibold text-slate-900 dark:text-white"><%= shippingDetails.full_name %> (<%= shippingDetails.phone %>)</p>
+          <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed"><%= shippingDetails.address %>, <%= shippingDetails.city %> - <%= shippingDetails.pincode %></p>
+        </div>
+
+        <form action="/place-order" method="POST" id="place-order-form">
+          <input type="hidden" name="sid" value="<%= typeof sid !== 'undefined' ? sid : '' %>">
+          <input type="hidden" name="full_name" value="<%= shippingDetails.full_name %>">
+          <input type="hidden" name="phone" value="<%= shippingDetails.phone %>">
+          <input type="hidden" name="address" value="<%= shippingDetails.address %>">
+          <input type="hidden" name="city" value="<%= shippingDetails.city %>">
+          <input type="hidden" name="pincode" value="<%= shippingDetails.pincode %>">
+
+          <div class="flex items-center justify-between pt-2">
+            <a href="/checkout" class="text-xs font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 flex items-center gap-1">
+              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+              <span>Back to Address</span>
+            </a>
+
+            <button
+              type="submit"
+              id="confirm-order-btn"
+              class="py-3.5 px-8 rounded-2xl font-bold text-sm text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] shadow-xl shadow-indigo-600/30 transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <i data-lucide="shield-check" class="w-5 h-5"></i>
+              <span>Confirm & Place Order (<%= formatPrice(total) %>)</span>
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+    <!-- Right: Order Items & Breakdown -->
+    <div class="space-y-6">
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm space-y-5">
+        <h3 class="text-base font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
+          Items in this Order
+        </h3>
+
+        <div class="max-h-60 overflow-y-auto space-y-3 pr-1">
+          <% cartItems.forEach(item => { %>
+            <div class="flex items-center gap-3 text-xs">
+              <img src="<%= item.image_url %>" alt="<%= item.name %>" class="w-12 h-12 rounded-xl object-cover border border-slate-200 dark:border-slate-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80';" />
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-slate-800 dark:text-slate-200 truncate"><%= item.name %></p>
+                <p class="text-slate-400">Qty: <%= item.quantity %></p>
+              </div>
+              <span class="font-bold text-slate-900 dark:text-white"><%= formatPrice(item.price * item.quantity) %></span>
+            </div>
+          <% }) %>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2.5 text-xs sm:text-sm">
+          <div class="flex justify-between text-slate-600 dark:text-slate-400">
+            <span>Subtotal</span>
+            <span class="font-semibold text-slate-900 dark:text-white"><%= formatPrice(subtotal) %></span>
+          </div>
+          <div class="flex justify-between text-slate-600 dark:text-slate-400">
+            <span>Delivery Fee</span>
+            <span>
+              <% if (deliveryFee === 0) { %>
+                <span class="text-emerald-600 font-semibold">FREE</span>
+              <% } else { %>
+                <span class="font-semibold text-slate-900 dark:text-white"><%= formatPrice(deliveryFee) %></span>
+              <% } %>
+            </span>
+          </div>
+          <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-between text-base font-extrabold text-slate-900 dark:text-white">
+            <span>Total to Pay at Delivery</span>
+            <span class="text-indigo-600 dark:text-indigo-400"><%= formatPrice(total) %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  const form = document.getElementById('place-order-form');
+  const btn = document.getElementById('confirm-order-btn');
+  if (form && btn) {
+    form.addEventListener('submit', () => {
+      btn.style.pointerEvents = 'none';
+      btn.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>Placing Order...</span>
+      `;
+    });
+  }
+</script>
+
+<%- include('partials/footer') %>

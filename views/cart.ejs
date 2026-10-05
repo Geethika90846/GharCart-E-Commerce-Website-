@@ -1,0 +1,189 @@
+<%- include('partials/header') %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+  <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Shopping Cart</h1>
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Review your selected items before proceeding to Cash on Delivery checkout</p>
+    </div>
+    <a href="/dashboard" class="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+      <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+      <span>Continue Shopping</span>
+    </a>
+  </div>
+
+  <!-- Empty Cart State -->
+  <div id="cart-empty-state" class="<%= cartItems.length === 0 ? '' : 'hidden' %> text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
+    <div class="w-20 h-20 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 mx-auto flex items-center justify-center mb-4">
+      <i data-lucide="shopping-bag" class="w-10 h-10"></i>
+    </div>
+    <h3 class="text-xl font-bold text-slate-900 dark:text-white">Your cart is empty</h3>
+    <p class="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-2 leading-relaxed">
+      Looks like you haven't added anything to your cart yet. Discover trending deals and shop with Cash on Delivery!
+    </p>
+    <div class="mt-6">
+      <a
+        href="/dashboard"
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-lg shadow-indigo-600/25 transition-all"
+      >
+        <i data-lucide="compass" class="w-4 h-4"></i>
+        <span>Start Shopping</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Cart with Items -->
+  <div id="cart-items-container" class="<%= cartItems.length > 0 ? '' : 'hidden' %> grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Items List -->
+    <div class="lg:col-span-2 space-y-4">
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-6 shadow-sm divide-y divide-slate-100 dark:divide-slate-800">
+        <% cartItems.forEach(item => { %>
+          <div id="cart-row-<%= item.product_id %>" class="py-4 first:pt-0 last:pb-0 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            
+            <!-- Thumbnail & Info -->
+            <div class="flex items-center gap-4">
+              <a href="/product/<%= item.product_id %>" class="w-20 h-20 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 flex-shrink-0 border border-slate-200 dark:border-slate-700">
+                <img src="<%= item.image_url %>" alt="<%= item.name %>" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80';" />
+              </a>
+              <div>
+                <a href="/product/<%= item.product_id %>" class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white hover:text-indigo-600 line-clamp-1">
+                  <%= item.name %>
+                </a>
+                <span class="text-xs text-slate-400 block mt-0.5"><%= item.category %></span>
+                <span class="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-1 block">
+                  <%= formatPrice(item.price) %> each
+                </span>
+              </div>
+            </div>
+
+            <!-- Quantity Stepper & Subtotal -->
+            <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto">
+              
+              <!-- Quantity Stepper -->
+              <div class="flex items-center border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/80 p-1">
+                <button
+                  type="button"
+                  onclick="updateCartItem(<%= item.product_id %>, <%= item.quantity - 1 %>)"
+                  class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 transition-colors font-bold text-sm"
+                >
+                  -
+                </button>
+                <input
+                  type="text"
+                  id="qty-input-<%= item.product_id %>"
+                  value="<%= item.quantity %>"
+                  readonly
+                  class="w-8 text-center text-xs font-bold bg-transparent border-none text-slate-900 dark:text-white"
+                />
+                <button
+                  type="button"
+                  onclick="updateCartItem(<%= item.product_id %>, <%= item.quantity + 1 %>)"
+                  class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 transition-colors font-bold text-sm"
+                >
+                  +
+                </button>
+              </div>
+
+              <!-- Item Total -->
+              <div class="text-right min-w-[80px]">
+                <span class="text-xs text-slate-400 block -mb-0.5 sm:hidden">Total</span>
+                <span id="item-total-<%= item.product_id %>" class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                  <%= formatPrice(item.price * item.quantity) %>
+                </span>
+              </div>
+
+              <!-- Remove Item Button -->
+              <button
+                type="button"
+                onclick="removeCartItem(<%= item.product_id %>)"
+                title="Remove item"
+                class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors"
+              >
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+          </div>
+        <% }) %>
+      </div>
+
+      <div class="sm:hidden text-center pt-2">
+        <a href="/dashboard" class="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+          <span>Add more products</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Order Summary Column -->
+    <div class="space-y-6">
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm space-y-5">
+        <h2 class="text-base font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
+          Order Summary
+        </h2>
+
+        <!-- Free Delivery Eligibility -->
+        <div id="free-shipping-progress" class="text-xs <%= subtotal >= 999 ? 'text-emerald-700 bg-emerald-50 dark:bg-emerald-950/50 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800' : 'text-amber-700 bg-amber-50 dark:bg-amber-950/50 dark:text-amber-300 border-amber-200 dark:border-amber-800' %> p-2.5 rounded-xl border text-center font-medium">
+          <% if (subtotal >= 999) { %>
+            🎉 You qualified for <b>FREE Delivery</b>!
+          <% } else { %>
+            Add <b><%= formatPrice(999 - subtotal) %></b> more to unlock <b>FREE Delivery</b>!
+          <% } %>
+        </div>
+
+        <div class="space-y-3 text-sm">
+          <div class="flex justify-between text-slate-600 dark:text-slate-400">
+            <span>Subtotal</span>
+            <span id="summary-subtotal" class="font-semibold text-slate-900 dark:text-white"><%= formatPrice(subtotal) %></span>
+          </div>
+
+          <div class="flex justify-between text-slate-600 dark:text-slate-400">
+            <span>Delivery Fee</span>
+            <span id="summary-delivery">
+              <% if (deliveryFee === 0 && subtotal > 0) { %>
+                <span class="text-emerald-600 font-semibold">FREE</span>
+              <% } else { %>
+                <span class="font-semibold text-slate-900 dark:text-white"><%= formatPrice(deliveryFee) %></span>
+              <% } %>
+            </span>
+          </div>
+
+          <div class="flex justify-between text-slate-600 dark:text-slate-400">
+            <span>Payment Method</span>
+            <span class="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+              <i data-lucide="banknote" class="w-3.5 h-3.5"></i>
+              Cash on Delivery
+            </span>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between text-base font-extrabold text-slate-900 dark:text-white">
+            <span>Total Payable</span>
+            <span id="summary-total" class="text-indigo-600 dark:text-indigo-400"><%= formatPrice(total) %></span>
+          </div>
+        </div>
+
+        <a
+          href="/checkout"
+          class="w-full py-3.5 px-4 rounded-2xl font-semibold text-sm text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] shadow-lg shadow-indigo-600/25 transition-all flex items-center justify-center gap-2"
+        >
+          <span>Proceed to Checkout</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+
+        <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl text-[11px] text-slate-500 space-y-1">
+          <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-300">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-600"></i>
+            <span>Safe & Zero-Risk COD Order</span>
+          </div>
+          <p>No credit card required. Hand over cash or scan QR upon physical package delivery.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>

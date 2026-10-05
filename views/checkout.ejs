@@ -1,0 +1,210 @@
+<%- include('partials/header') %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+  <!-- Step Indicator -->
+  <div class="flex items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm font-semibold text-slate-500">
+    <div class="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+      <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs">1</span>
+      <span>Delivery Details</span>
+    </div>
+    <div class="w-8 sm:w-16 h-0.5 bg-slate-200 dark:bg-slate-700"></div>
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 flex items-center justify-center text-xs">2</span>
+      <span>COD Confirmation</span>
+    </div>
+    <div class="w-8 sm:w-16 h-0.5 bg-slate-200 dark:bg-slate-700"></div>
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 flex items-center justify-center text-xs">3</span>
+      <span>Placed</span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- Left: Delivery Address Form -->
+    <div class="lg:col-span-2 space-y-6">
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Shipping & Delivery Address</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Please enter your physical address where the courier should deliver your COD package.</p>
+          </div>
+          <button
+            type="button"
+            onclick="fillSampleAddress()"
+            class="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 text-xs font-semibold transition-colors flex items-center gap-1.5 border border-indigo-200 dark:border-indigo-800"
+          >
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            <span>Auto-fill Address</span>
+          </button>
+        </div>
+
+        <% if (errors && errors.length > 0) { %>
+          <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs space-y-1">
+            <div class="font-semibold flex items-center gap-1.5">
+              <i data-lucide="alert-circle" class="w-4 h-4"></i>
+              <span>Please correct the errors below:</span>
+            </div>
+            <ul class="list-disc list-inside">
+              <% errors.forEach(err => { %>
+                <li><%= err.msg %></li>
+              <% }) %>
+            </ul>
+          </div>
+        <% } %>
+
+        <form action="/checkout" method="POST" id="checkout-form" class="space-y-4">
+          <input type="hidden" name="sid" value="<%= typeof sid !== 'undefined' ? sid : '' %>">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="full_name" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Recipient Name</label>
+              <input
+                type="text"
+                id="full_name"
+                name="full_name"
+                required
+                value="<%= formData.full_name || '' %>"
+                placeholder="Full Name"
+                class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+
+            <div>
+              <label for="phone" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Mobile Phone (for delivery SMS/Call)</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                required
+                value="<%= formData.phone || '' %>"
+                placeholder="10-digit mobile number"
+                class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label for="address" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Street Address, House/Flat No, Landmark</label>
+            <textarea
+              id="address"
+              name="address"
+              rows="3"
+              required
+              placeholder="e.g. Flat 304, Green Heights, 5th Cross, Near Metro Station"
+              class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            ><%= formData.address || '' %></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="city" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">City / Town</label>
+              <input
+                type="text"
+                id="city"
+                name="city"
+                required
+                value="<%= formData.city || '' %>"
+                placeholder="e.g. Bengaluru, Mumbai, Delhi"
+                class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+
+            <div>
+              <label for="pincode" class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">Postal Pincode</label>
+              <input
+                type="text"
+                id="pincode"
+                name="pincode"
+                required
+                pattern="[0-9]{6}"
+                value="<%= formData.pincode || '' %>"
+                placeholder="6-digit pincode"
+                class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+          </div>
+
+          <div class="pt-4 flex items-center justify-between">
+            <a href="/cart" class="text-xs font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 flex items-center gap-1">
+              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+              <span>Back to Cart</span>
+            </a>
+
+            <button
+              type="submit"
+              class="py-3 px-6 rounded-2xl font-semibold text-sm text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] shadow-lg shadow-indigo-600/25 transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <span>Continue to Payment</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right: Order Summary Preview -->
+    <div class="space-y-6">
+      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm space-y-5">
+        <h3 class="text-base font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
+          Order Summary (<%= cartItems.length %> items)
+        </h3>
+
+        <!-- Mini items list -->
+        <div class="max-h-60 overflow-y-auto space-y-3 pr-1">
+          <% cartItems.forEach(item => { %>
+            <div class="flex items-center gap-3 text-xs">
+              <img src="<%= item.image_url %>" alt="<%= item.name %>" class="w-12 h-12 rounded-xl object-cover border border-slate-200 dark:border-slate-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80';" />
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-slate-800 dark:text-slate-200 truncate"><%= item.name %></p>
+                <p class="text-slate-400">Qty: <%= item.quantity %> × <%= formatPrice(item.price) %></p>
+              </div>
+              <span class="font-bold text-slate-900 dark:text-white"><%= formatPrice(item.price * item.quantity) %></span>
+            </div>
+          <% }) %>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2.5 text-xs sm:text-sm">
+          <div class="flex justify-between text-slate-600 dark:text-slate-400">
+            <span>Subtotal</span>
+            <span class="font-semibold text-slate-900 dark:text-white"><%= formatPrice(subtotal) %></span>
+          </div>
+          <div class="flex justify-between text-slate-600 dark:text-slate-400">
+            <span>Delivery Fee</span>
+            <span>
+              <% if (deliveryFee === 0) { %>
+                <span class="text-emerald-600 font-semibold">FREE</span>
+              <% } else { %>
+                <span class="font-semibold text-slate-900 dark:text-white"><%= formatPrice(deliveryFee) %></span>
+              <% } %>
+            </span>
+          </div>
+          <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-between text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">
+            <span>Total Payable</span>
+            <span class="text-indigo-600 dark:text-indigo-400"><%= formatPrice(total) %></span>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60 text-[11px] text-indigo-900 dark:text-indigo-200 flex items-center gap-2">
+          <i data-lucide="check-circle" class="w-4 h-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0"></i>
+          <span>Pay <%= formatPrice(total) %> in cash upon delivery to your doorstep.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  function fillSampleAddress() {
+    document.getElementById('full_name').value = 'Rahul Verma';
+    document.getElementById('phone').value = '9876543210';
+    document.getElementById('address').value = 'Flat 402, Green Meadows, 12th Main Road, Indiranagar';
+    document.getElementById('city').value = 'Bengaluru';
+    document.getElementById('pincode').value = '560038';
+    if (window.showToast) showToast('Filled sample delivery address!', 'info');
+  }
+</script>
+
+<%- include('partials/footer') %>

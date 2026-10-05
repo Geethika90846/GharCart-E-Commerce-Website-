@@ -1,0 +1,129 @@
+<%- include('partials/header') %>
+
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+  <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">My Orders</h1>
+      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Track the delivery status and details of your GharCart orders</p>
+    </div>
+    <a href="/dashboard" class="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+      <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+      <span>Order More</span>
+    </a>
+  </div>
+
+  <% if (orders.length === 0) { %>
+    <div class="text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
+      <div class="w-20 h-20 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 mx-auto flex items-center justify-center mb-4">
+        <i data-lucide="package" class="w-10 h-10"></i>
+      </div>
+      <h3 class="text-xl font-bold text-slate-900 dark:text-white">No orders yet</h3>
+      <p class="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-2 leading-relaxed">
+        You haven't placed any orders yet. Start exploring great items with our zero-risk Cash on Delivery service.
+      </p>
+      <div class="mt-6">
+        <a
+          href="/dashboard"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-lg shadow-indigo-600/25 transition-all"
+        >
+          <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+          <span>Shop Now</span>
+        </a>
+      </div>
+    </div>
+  <% } else { %>
+    <div class="space-y-6">
+      <% orders.forEach(order => { %>
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden transition-all">
+          
+          <!-- Order Card Header -->
+          <div class="bg-slate-50 dark:bg-slate-800/60 p-4 sm:p-6 border-b border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-2xl bg-white dark:bg-slate-700 shadow-sm flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                <i data-lucide="package" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <span class="text-xs text-slate-400 block">Order ID</span>
+                <span class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">#<%= order.id %></span>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-4 sm:gap-6 text-xs">
+              <div>
+                <span class="text-slate-400 block">Date Placed</span>
+                <span class="font-semibold text-slate-700 dark:text-slate-300">
+                  <%= new Date(order.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                </span>
+              </div>
+
+              <div>
+                <span class="text-slate-400 block">Total Amount</span>
+                <span class="font-bold text-slate-900 dark:text-white"><%= formatPrice(order.total) %></span>
+              </div>
+
+              <div>
+                <span class="text-slate-400 block">Status</span>
+                <% 
+                  let badgeClass = 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300';
+                  if (order.status === 'Shipped') badgeClass = 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300';
+                  if (order.status === 'Delivered') badgeClass = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300';
+                  if (order.status === 'Cancelled') badgeClass = 'bg-rose-100 text-rose-800 dark:bg-rose-900/50 dark:text-rose-300';
+                %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full font-bold text-xs <%= badgeClass %>">
+                  <%= order.status %>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Items in Order -->
+          <div class="p-4 sm:p-6 space-y-4">
+            <div class="space-y-3">
+              <% order.items.forEach(item => { %>
+                <div class="flex items-center justify-between gap-4 py-2 border-b border-slate-100 dark:border-slate-800 last:border-b-0">
+                  <div class="flex items-center gap-3">
+                    <img
+                      src="<%= item.image_url %>"
+                      alt="<%= item.product_name %>"
+                      class="w-14 h-14 rounded-xl object-cover border border-slate-200 dark:border-slate-700 flex-shrink-0"
+                      onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80';"
+                    />
+                    <div>
+                      <h4 class="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+                        <%= item.product_name %>
+                      </h4>
+                      <p class="text-xs text-slate-400 mt-0.5">
+                        Qty: <%= item.quantity %> • Unit Price: <%= formatPrice(item.price) %>
+                      </p>
+                    </div>
+                  </div>
+                  <span class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                    <%= formatPrice(item.price * item.quantity) %>
+                  </span>
+                </div>
+              <% }) %>
+            </div>
+
+            <!-- Delivery Address Footer info -->
+            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs text-slate-500 gap-2">
+              <div>
+                <span class="font-medium text-slate-700 dark:text-slate-300">Deliver to: </span>
+                <span><%= order.full_name %>, <%= order.address %>, <%= order.city %> - <%= order.pincode %> (Ph: <%= order.phone %>)</span>
+              </div>
+              <div class="flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
+                <i data-lucide="banknote" class="w-4 h-4"></i>
+                <span><%= order.payment_method %></span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+
+</div>
+
+<%- include('partials/footer') %>

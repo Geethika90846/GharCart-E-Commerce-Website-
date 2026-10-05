@@ -1,0 +1,6 @@
+{
+  "name": "GharCart",
+  "description": "A modern online store where customers browse products, add them to a cart, and place Cash-on-Delivery orders, while admins manage products, customers, and orders from a dedicated dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

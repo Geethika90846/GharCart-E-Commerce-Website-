@@ -1,0 +1,105 @@
+<%- include('partials/header') %>
+
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-8 sm:p-12 shadow-2xl text-center space-y-8">
+    
+    <!-- Animated Checkmark Graphic -->
+    <div class="flex justify-center">
+      <div class="w-20 h-20 rounded-full bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center p-2">
+        <svg class="w-16 h-16" viewBox="0 0 52 52">
+          <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+          <path class="checkmark-check" fill="none" stroke="#10b981" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Title & Details -->
+    <div class="space-y-2">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">
+        <i data-lucide="check" class="w-3.5 h-3.5"></i>
+        <span>Cash on Delivery Confirmed</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+        Order Placed Successfully!
+      </h1>
+      <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+        Your order <b>#<%= order.id %></b> has been registered. Our fulfillment team is preparing it for prompt dispatch.
+      </p>
+    </div>
+
+    <!-- Order Timeline Card -->
+    <div class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 text-left space-y-4">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-700 gap-2">
+        <div>
+          <span class="text-xs text-slate-400 block">Order Number</span>
+          <span class="text-base font-bold text-slate-900 dark:text-white">#<%= order.id %></span>
+        </div>
+        <div class="text-left sm:text-right">
+          <span class="text-xs text-slate-400 block">Expected Doorstep Delivery</span>
+          <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+            <i data-lucide="truck" class="w-3.5 h-3.5"></i>
+            3 to 5 Business Days
+          </span>
+        </div>
+      </div>
+
+      <!-- Recipient & Payment Method -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+        <div>
+          <span class="font-bold uppercase tracking-wider text-slate-400 block mb-1">Delivering to</span>
+          <p class="font-semibold text-slate-800 dark:text-slate-200"><%= order.full_name %> (<%= order.phone %>)</p>
+          <p class="text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5"><%= order.address %>, <%= order.city %> - <%= order.pincode %></p>
+        </div>
+
+        <div>
+          <span class="font-bold uppercase tracking-wider text-slate-400 block mb-1">Payment Upon Delivery</span>
+          <p class="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+            <i data-lucide="banknote" class="w-4 h-4"></i>
+            <%= order.payment_method %>
+          </p>
+          <p class="text-sm font-extrabold text-slate-900 dark:text-white mt-1">
+            Amount: <%= formatPrice(order.total) %>
+          </p>
+        </div>
+      </div>
+
+      <!-- Items ordered -->
+      <div class="pt-3 border-t border-slate-200 dark:border-slate-700">
+        <span class="font-bold uppercase tracking-wider text-slate-400 text-[11px] block mb-2">Package Contents</span>
+        <div class="space-y-2">
+          <% items.forEach(item => { %>
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2.5">
+                <img src="<%= item.image_url %>" alt="<%= item.product_name %>" class="w-8 h-8 rounded-lg object-cover" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80';" />
+                <span class="text-slate-800 dark:text-slate-200 font-medium"><%= item.product_name %> (×<%= item.quantity %>)</span>
+              </div>
+              <span class="font-bold text-slate-900 dark:text-white"><%= formatPrice(item.price * item.quantity) %></span>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+      <a
+        href="/orders"
+        class="w-full sm:w-auto px-6 py-3 rounded-2xl font-semibold text-sm text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/80 hover:bg-indigo-100 dark:hover:bg-indigo-900 border border-indigo-200 dark:border-indigo-800 transition-all flex items-center justify-center gap-2"
+      >
+        <i data-lucide="package" class="w-4 h-4"></i>
+        <span>View My Orders</span>
+      </a>
+
+      <a
+        href="/dashboard"
+        class="w-full sm:w-auto px-6 py-3 rounded-2xl font-semibold text-sm text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/25 transition-all flex items-center justify-center gap-2"
+      >
+        <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+        <span>Continue Shopping</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<%- include('partials/footer') %>
